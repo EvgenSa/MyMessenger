@@ -5,14 +5,14 @@ import json
 
 class Registartion:
 
-    def buildActionMessage(self, text):
+    def build_action_message(self, text):
         return {'command': text, 'type': "COMMAND"}
 
-    def buildUserLoginMessage(self, username, password, msg_type):
+    def build_userLogin_message(self, username, password, msg_type):
         return {'username': username, 'password': password, 'type': msg_type}
 
-    def loginOrRegister(self, status, uname, password, sock):
-        self.send(self.buildUserLoginMessage(uname, password, "REGISTER" if status == "n" else "LOGIN"), sock)
+    def login_or_register(self, status, uname, password, sock):
+        self.send(self.build_userLogin_message(uname, password, "REGISTER" if status == "n" else "LOGIN"), sock)
 
     def send(self, message, sock):
         sock.send(json.dumps(message).encode('utf-8'))
@@ -20,16 +20,15 @@ class Registartion:
 
 class Client:
 
-
-    def receiveMsg(self, sock):
-        serverDown = False
-        while True and (not serverDown):
+    def receive_msg(self, sock):
+        server_down = False
+        while True and (not server_down):
             try:
                 msg = sock.recv(1024).decode('utf-8')
                 print(msg)
             except:
                 print('Server is Down. You are now Disconnected. Press enter to exit...')
-                serverDown = True
+                server_down = True
 
     def chat(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,10 +41,10 @@ class Client:
         uname = input("Enter user name::")
         password = input("Enter password::")
 
-        Registartion().loginOrRegister(status, uname, password, s)
+        Registartion().login_or_register(status, uname, password, s)
 
         clientRunning = True
-        threading.Thread(target=self.receiveMsg, args = (s,)).start()
+        threading.Thread(target=self.receive_msg, args = (s,)).start()
 
         while clientRunning:
             tempMsg = input()
@@ -53,9 +52,9 @@ class Client:
             registratiuon_manager = Registartion()
             if '@quit' in msg:
                 clientRunning = False
-                registratiuon_manager.send(registratiuon_manager.buildActionMessage('@quit'), s)
+                registratiuon_manager.send(registratiuon_manager.build_action_message('@quit'), s)
             else:
-                registratiuon_manager.send(registratiuon_manager.buildActionMessage(msg), s)
+                registratiuon_manager.send(registratiuon_manager.build_action_message(msg), s)
 
 
 if __name__ == '__main__':
